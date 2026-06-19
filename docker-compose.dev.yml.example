@@ -1,0 +1,26 @@
+# Development overrides — copy to docker-compose.override.yml if needed
+# This file is NOT loaded automatically (rename to docker-compose.override.yml)
+
+services:
+  backend:
+    build:
+      target: builder
+    command: npm run dev
+    volumes:
+      - ./apps/backend/src:/app/src:ro
+    environment:
+      NODE_ENV: development
+
+  frontend:
+    build:
+      target: builder
+    command: npm run dev
+    volumes:
+      - ./apps/frontend/src:/app/src:ro
+    environment:
+      NODE_ENV: development
+
+  cms:
+    command: npm run develop
+    environment:
+      NODE_ENV: development

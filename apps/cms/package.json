@@ -1,0 +1,27 @@
+{
+  "name": "@hexastudio/cms",
+  "version": "0.1.0",
+  "private": true,
+  "description": "HexaStudio Strapi CMS",
+  "scripts": {
+    "build": "strapi build",
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "strapi": "strapi"
+  },
+  "dependencies": {
+    "@strapi/plugin-users-permissions": "^5.6.0",
+    "@strapi/strapi": "^5.6.0",
+    "pg": "^8.13.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "styled-components": "^6.1.13"
+  },
+  "engines": {
+    "node": ">=20 <=22"
+  },
+  "strapi": {
+    "uuid": "hexastudio-cms-v1"
+  }
+}

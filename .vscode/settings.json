@@ -1,0 +1,6 @@
+{
+    "copilot-auto-continue.masterEnabled": true,
+    "copilot-auto-continue.smartAIEnabled": false,
+    "copilot-auto-continue.autoContinueEnabled": true,
+    "claudeCode.useTerminal": true
+}

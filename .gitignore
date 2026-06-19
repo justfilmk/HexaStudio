@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build
+dist/
+build/
+.next/
+out/
+.strapi/
+.tmp/
+
+# Environment (never commit secrets)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+.cursor/
+.anima/
+.kilocode/
+.projectmanager/
+.vs/
+
+# Docker
+docker/data/
+
+# Strapi
+apps/cms/.cache/
+apps/cms/public/uploads/
+
+# Testing
+coverage/
+
+# Internal docs (not for public repo)
+competitor-research-progress.md
+
+# Misc
+*.tsbuildinfo
+.turbo/
