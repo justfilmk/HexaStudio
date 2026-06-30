@@ -6,7 +6,9 @@
   "workspaces": [
     "apps/frontend",
     "apps/backend",
-    "apps/cms"
+    "apps/cms",
+    "packages/types",
+    "packages/utils"
   ],
   "scripts": {
     "dev:frontend": "npm run dev --workspace=apps/frontend",

@@ -18,7 +18,9 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "three": "^0.171.0",
-    "zustand": "^5.0.2"
+    "zustand": "^5.0.2",
+    "@hexastudio/types": "*",
+    "@hexastudio/utils": "*"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",

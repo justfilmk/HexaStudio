@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import helmet from "helmet";
 import * as Sentry from "@sentry/node";
 import { AppModule } from "./app.module";
+import { GlobalExceptionFilter } from "./core/filters/global-exception.filter";
 
 async function bootstrap() {
   if (process.env.SENTRY_DSN) {
@@ -24,6 +25,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   const corsOrigins = (process.env.CORS_ORIGINS ?? "http://localhost:3000")
     .split(",")

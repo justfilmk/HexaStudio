@@ -4,15 +4,15 @@ Production v1 foundation for [HexaStudio.net](https://hexastudio.net) — a 3D c
 
 ## Stack
 
-| Layer | Technology |
-|-------|------------|
-| Frontend | Next.js 15, TailwindCSS 4, Three.js, R3F, Drei, GSAP, Zustand, TanStack Query |
-| API | NestJS, Swagger, JWT, Passport, Class Validator, Helmet |
-| CMS | Strapi 5 (blog, categories, portfolio, services, SEO) |
-| Data | PostgreSQL 16, Redis 7, MinIO |
-| Proxy | Traefik v3 |
-| Monitoring | Prometheus, Grafana, Loki, Promtail |
-| Errors | Sentry (env-configured) |
+| Layer      | Technology                                                                    |
+| ---------- | ----------------------------------------------------------------------------- |
+| Frontend   | Next.js 15, TailwindCSS 4, Three.js, R3F, Drei, GSAP, Zustand, TanStack Query |
+| API        | NestJS, Swagger, JWT, Passport, Class Validator, Helmet                       |
+| CMS        | Strapi 5 (blog, categories, portfolio, services, SEO)                         |
+| Data       | PostgreSQL 16, Redis 7, MinIO                                                 |
+| Proxy      | Traefik v3                                                                    |
+| Monitoring | Prometheus, Grafana, Loki, Promtail                                           |
+| Errors     | Sentry (env-configured)                                                       |
 
 ## Quick Start (Docker)
 
@@ -33,7 +33,7 @@ cp .env.example .env
 Add to `C:\Windows\System32\drivers\etc\hosts` (Windows) or `/etc/hosts` (Linux/macOS):
 
 ```
-127.0.0.1 localhost api.localhost cms.localhost storage.localhost storage-console.localhost grafana.localhost prometheus.localhost traefik.localhost
+127.0.0.1 hexastudio.net api.hexastudio.net cms.hexastudio.net storage.hexastudio.net storage-console.hexastudio.net grafana.hexastudio.net prometheus.hexastudio.net traefik.hexastudio.net
 ```
 
 ### 4. Start the stack
@@ -44,17 +44,17 @@ docker compose up -d --build
 
 ### 5. Access services
 
-| Service | URL |
-|---------|-----|
-| Frontend | http://localhost |
-| API | http://api.localhost/api |
-| API Docs (Swagger) | http://api.localhost/api/docs |
-| CMS (Strapi) | http://cms.localhost/admin |
-| MinIO API | http://storage.localhost |
-| MinIO Console | http://storage-console.localhost |
-| Grafana | http://grafana.localhost |
-| Prometheus | http://prometheus.localhost |
-| Traefik Dashboard | http://traefik.localhost:8080 |
+| Service            | URL                              |
+| ------------------ | -------------------------------- |
+| Frontend           | http://localhost                 |
+| API                | http://api.localhost/api         |
+| API Docs (Swagger) | http://api.localhost/api/docs    |
+| CMS (Strapi)       | http://cms.localhost/admin       |
+| MinIO API          | http://storage.localhost         |
+| MinIO Console      | http://storage-console.localhost |
+| Grafana            | http://grafana.localhost         |
+| Prometheus         | http://prometheus.localhost      |
+| Traefik Dashboard  | http://traefik.localhost:8080    |
 
 ## Local Development (without Docker apps)
 
@@ -106,13 +106,12 @@ Every push to `main` triggers GitHub Actions:
 
 1. Add these secrets to your GitHub repo → Settings → Secrets and variables → Actions:
 
-   | Secret | Value |
-   |--------|-------|
-   | `SERVER_HOST` | Your server IP |
-   | `SERVER_USER` | SSH user (e.g. `ubuntu`) |
+   | Secret             | Value                          |
+   | ------------------ | ------------------------------ |
+   | `SERVER_HOST`    | Your server IP                 |
+   | `SERVER_USER`    | SSH user (e.g.`ubuntu`)      |
    | `SERVER_SSH_KEY` | Private SSH key for deployment |
-   | `GITHUB_TOKEN` | Auto-provided |
-
+   | `GITHUB_TOKEN`   | Auto-provided                  |
 2. On your server: clone the repo, generate secrets, and do the first deploy:
 
    ```bash
