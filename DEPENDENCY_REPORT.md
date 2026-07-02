@@ -1,50 +1,111 @@
 # Dependency Report: HEXA Vision
 
-## 1. Frontend Dependencies (`apps/frontend`)
+**Report Date:** 2026-06-30
+
+---
+
+## 1. Frontend (`apps/frontend`)
+
 | Package | Version | Role | Status |
 |---------|---------|------|--------|
 | `next` | ^15.1.0 | Framework | Latest |
-| `react` | ^19.0.0 | UI Library | Latest |
-| `three` | ^0.171.0 | 3D Core | Up-to-date |
-| `@react-three/fiber` | ^9.0.0 | R3F Bridge | Up-to-date |
-| `@react-three/drei` | ^10.0.0 | R3F Helpers | Up-to-date |
-| `gsap` | ^3.12.5 | Animation | Stable |
-| `@tanstack/react-query` | ^5.62.0 | Server State | Stable |
-| `zustand` | ^5.0.2 | Client State | Stable |
-| `tailwindcss` | ^4.0.0 | Styling | Latest (v4) |
+| `react` / `react-dom` | ^19.0.0 | UI | Latest |
+| `three` | ^0.171.0 | 3D core | Installed, unused |
+| `@react-three/fiber` | ^9.0.0 | R3F bridge | Installed, unused |
+| `@react-three/drei` | ^10.0.0 | R3F helpers | Installed, unused |
+| `gsap` | ^3.12.5 | Animation | Installed, unused |
+| `@tanstack/react-query` | ^5.62.0 | Server state | Provider only |
+| `zustand` | ^5.0.2 | Client state | Defined, unused |
+| `@sentry/nextjs` | ^8.45.0 | Monitoring | Not configured |
+| `tailwindcss` | ^4.0.0 | Styling | Active |
+| `@hexastudio/types` | workspace | Shared types | Declared, underused |
+| `@hexastudio/utils` | workspace | Shared utils | Declared, unused |
+| `clsx` | — | Class merging | **MISSING — used in code** |
+| `tailwind-merge` | — | Tailwind merge | **MISSING — used in code** |
+| `framer-motion` | — | UI animation | **Not installed** (docs only) |
 
-## 2. Backend Dependencies (`apps/backend`)
+---
+
+## 2. Backend (`apps/backend`)
+
 | Package | Version | Role | Status |
 |---------|---------|------|--------|
-| `@nestjs/core` | ^10.4.15 | Framework | Stable |
-| `@nestjs/jwt` | ^10.2.0 | Auth | Stable |
-| `passport` | ^0.7.0 | Auth Strategy | Stable |
-| `ioredis` | ^5.4.1 | Redis Client | Stable |
-| `class-validator` | ^0.14.1 | Validation | Stable |
-| `helmet` | ^8.0.0 | Security | Stable |
-| `@sentry/node` | ^8.45.0 | Monitoring | Latest |
+| `@nestjs/core` | ^10.4.15 | Framework | Active |
+| `@nestjs/jwt` | ^10.2.0 | Auth | Unused |
+| `@nestjs/passport` | ^10.0.3 | Auth | Unused |
+| `passport-jwt` | ^4.0.1 | JWT strategy | Unused |
+| `ioredis` | ^5.4.1 | Redis | Unused |
+| `class-validator` | ^0.14.1 | Validation | Pipe configured |
+| `helmet` | ^8.0.0 | Security headers | Active |
+| `@nestjs/throttler` | ^6.2.1 | Rate limiting | Active |
+| `@sentry/node` | ^8.45.0 | Monitoring | Conditional init |
+| `@hexastudio/types` | workspace | Shared types | Used in filter |
+| `eslint` | — | Linting | **MISSING — lint script exists** |
 
-## 3. CMS Dependencies (`apps/cms`)
+---
+
+## 3. CMS (`apps/cms`)
+
 | Package | Version | Role | Status |
 |---------|---------|------|--------|
-| `@strapi/strapi` | ^5.6.0 | Headless CMS | Latest (v5) |
-| `pg` | ^8.13.1 | DB Driver | Stable |
+| `@strapi/strapi` | ^5.6.0 | Headless CMS | Active |
+| `pg` | ^8.13.1 | PostgreSQL driver | Active |
+| `react-router-dom` | ^6.28.0 | Strapi admin only | Not frontend router |
 
-## 4. Infrastructure Images
-| Service | Image | Version | Note |
-|---------|-------|---------|------|
-| Traefik | `traefik:v3.3` | v3.3 | Latest |
-| Postgres | `postgres:16-alpine` | v16 | Stable |
-| Redis | `redis:7-alpine` | v7 | Stable |
-| MinIO | `minio/minio:latest` | Latest | Stable |
-| Prometheus | `prom/prometheus:v2.54.1` | v2.54 | Stable |
-| Grafana | `grafana/grafana:11.3.0` | v11.3 | Stable |
-| Loki | `grafana/loki:3.2.1` | v3.2 | Stable |
+**Engine constraint:** `node: >=20 <=22` — conflicts with local Node v24.
 
-## 5. Risk Analysis
-- **React 19 / Next 15:** Being on the absolute bleeding edge is great for features but can lead to unstable third-party library compatibility (especially in the Three.js ecosystem).
-- **Tailwind 4:** Still very new; potential for minor breaking changes in utility classes.
-- **Strapi 5:** Significant upgrade from v4; ensure all plugins used are v5 compatible.
+---
 
-## 6. Summary
-The project uses a **cutting-edge, modern stack**. There are no outdated or legacy dependencies. The primary risk is "version instability" due to the proximity to latest releases.
+## 4. Shared Packages
+
+| Package | Contents | Consumed By |
+|---------|----------|-------------|
+| `@hexastudio/types` | User, Category, Project, ApiResponse | Backend filter |
+| `@hexastudio/utils` | formatDate, slugify, isValidEmail, clamp | None |
+
+---
+
+## 5. Infrastructure Images
+
+| Service | Image | Version |
+|---------|-------|---------|
+| Traefik | `traefik:v3.3` | Latest stable |
+| PostgreSQL | `postgres:16-alpine` | LTS |
+| Redis | `redis:7-alpine` | Stable |
+| MinIO | `minio/minio:latest` | Latest tag risk |
+| Prometheus | `prom/prometheus:v2.54.1` | Pinned |
+| Grafana | `grafana/grafana:11.3.0` | Pinned |
+| Loki | `grafana/loki:3.2.1` | Pinned |
+
+---
+
+## 6. Risk Analysis
+
+| Risk | Severity | Mitigation |
+|------|----------|------------|
+| **Duplicate React versions** | Critical | Root `package.json` overrides force React 19 |
+| React 19 / Next 15 bleeding edge | Medium | Pin minors; test R3F compatibility early |
+| Tailwind 4 newness | Low | Monitor utility changes |
+| Strapi 5 plugin ecosystem | Medium | Verify plugin v5 support before install |
+| `minio/minio:latest` floating tag | Medium | Pin to specific version |
+| Missing clsx/tailwind-merge | High | Add immediately |
+| No Dependabot / audit CI | Medium | Add `npm audit` to CI |
+| Workspace packages in Docker | High | Fix build context |
+
+---
+
+## 7. Recommended Additions
+
+| Package | Target | Purpose |
+|---------|--------|---------|
+| `clsx`, `tailwind-merge` | frontend | Fix build |
+| `eslint`, `@typescript-eslint/*` | backend | Enable lint |
+| `vitest` + `@testing-library/react` | frontend | Unit tests |
+| `playwright` | root | E2E (Phase 3) |
+| `@radix-ui/react-slot` | frontend | Proper `asChild` (optional) |
+
+---
+
+## 8. Summary
+
+Cutting-edge, modern stack with **no legacy dependencies**. Primary risks are version instability, missing declared dependencies, and Docker workspace resolution. No outdated security-critical packages detected.

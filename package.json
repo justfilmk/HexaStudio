@@ -16,6 +16,7 @@
     "dev:cms": "npm run develop --workspace=apps/cms",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "tsc --build tsconfig.json",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:build": "docker compose build",
@@ -23,5 +24,9 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "overrides": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }

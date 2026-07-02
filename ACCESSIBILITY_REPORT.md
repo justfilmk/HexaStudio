@@ -1,31 +1,113 @@
 # Accessibility Report: HEXA Vision
 
+**Report Date:** 2026-06-30  
+**Standard Target:** WCAG 2.1 AA
+
+---
+
 ## 1. Current State
-The project is currently a skeleton. Basic HTML structure is used, but no accessibility (a11y) auditing has been performed.
 
-## 2. A11y Strategy for 3D Visualization
-Designing for 3D platforms is notoriously difficult for accessibility. To ensure inclusivity, the following strategies are adopted:
+| Criterion | Status | Notes |
+|-----------|--------|-------|
+| Semantic HTML | Partial | `<main>`, `<h1>` in HomeHero |
+| Keyboard navigation | Untested | Single button/link |
+| Focus indicators | Default browser | No custom focus styles |
+| ARIA labels | None | — |
+| Color contrast | Likely pass | Black on white, neutral-500 text |
+| `prefers-reduced-motion` | Not implemented | GSAP/R3F will need this |
+| Screen reader 3D layer | Not implemented | — |
+| Skip navigation link | Missing | — |
+| Form labels | N/A | Input component exists but unused |
+| Error boundaries | Present | Console only; no a11y announcement |
 
-### The "Dual-Interface" Approach
-- **Visual Layer:** High-end R3F experience for sighted users.
-- **Semantic Layer:** A parallel, visually hidden (but screen-reader accessible) DOM structure that describes the 3D scene. For every major 3D model, a corresponding descriptive text element will exist.
+**A11y Score Estimate:** 40/100 (minimal page, no audit performed)
 
-### UI Accessibility
-- **Keyboard Navigation:** Ensure all interactive elements (buttons, navigation, 3D hotspots) are focusable and reachable via `Tab` key.
-- **ARIA Labels:** Rigorous use of `aria-label`, `aria-describedby`, and `role` attributes across all React components.
-- **Color Contrast:** Use Tailwind 4 colors that meet WCAG 2.1 AA standards (contrast ratio of at least 4.5:1 for normal text).
+---
 
-### 3D-Specific Accessibility
-- **Alternative Controls:** Provide non-mouse ways to navigate the 3D scene (e.g., keyboard arrow keys or a structured list of "jump-to" locations).
-- **Motion Reduction:** Respect the `prefers-reduced-motion` media query to disable heavy GSAP animations or camera transitions for users with vestibular disorders.
+## 2. Dual-Interface Strategy (3D + Semantic)
 
-## 3. Accessibility Roadmap
-| Task | Priority | Goal |
-|------|----------|------|
-| Semantic HTML Audit | High | Ensure basic page structure is accessible |
-| Keyboard Focus Map | High | All UI elements must be Tab-navigable |
-| 3D Descriptive Layer | Medium | Screen-reader support for 3D scenes |
-| Contrast Verification | Medium | Validate all UI colors against WCAG AA |
+```
+┌─────────────────────────────────────┐
+│  Visual Layer (R3F Canvas)          │  ← Sighted users
+│  Interactive 3D scene               │
+├─────────────────────────────────────┤
+│  Semantic Layer (visually hidden)   │  ← Screen readers
+│  <nav aria-label="Scene locations"> │
+│  <article> per hotspot/model        │
+│  <p> descriptive text per element   │
+└─────────────────────────────────────┘
+```
 
-## 4. Summary
-Accessibility is often ignored in "Awwwards-style" sites. By implementing a **Dual-Interface** approach, HEXA Vision will maintain its high-end visual appeal while remaining inclusive and compliant with modern web standards.
+### Implementation Rules
+
+1. Every 3D hotspot has a corresponding focusable DOM element
+2. Scene navigation available via keyboard (Tab + Arrow keys)
+3. `aria-live="polite"` for scene state changes
+4. `role="img"` with `aria-label` for static 3D views
+
+---
+
+## 3. UI Component Checklist
+
+| Component | Focusable | ARIA | Status |
+|-----------|-----------|------|--------|
+| Button | Yes | Missing label on icon-only | Partial |
+| Input | Yes | Needs `aria-describedby` for errors | Built, unused |
+| Modal | — | Needs `role="dialog"`, focus trap | Built, unused |
+| Navbar | — | Needs `aria-current` on active link | Built, unused |
+| LoadingScreen | — | Needs `role="status"` | Built, unused |
+
+---
+
+## 4. Motion Accessibility
+
+| Feature | `prefers-reduced-motion: reduce` behavior |
+|---------|------------------------------------------|
+| GSAP camera transitions | Skip; jump to end state |
+| Framer Motion UI | `transition: none` |
+| R3F auto-rotate | Disable |
+| Loading animations | Static indicator |
+
+**Hook:** `useReducedMotion()` (Sprint 1) to gate all animations.
+
+---
+
+## 5. Color Contrast Audit (preliminary)
+
+| Element | Foreground | Background | Ratio | Pass |
+|---------|-----------|------------|-------|------|
+| H1 | #000 | #fff | 21:1 | Yes |
+| Subtitle | neutral-500 (~#737373) | #fff | ~4.6:1 | Yes (AA) |
+| API label | neutral-400 (~#a3a3a3) | #fff | ~2.8:1 | **Fail** (decorative) |
+
+---
+
+## 6. Accessibility Roadmap
+
+| Task | Priority | Effort | Sprint |
+|------|----------|--------|--------|
+| Skip-to-content link | High | 1 hr | Sprint 2 |
+| Focus visible styles on Button | High | 2 hr | Sprint 2 |
+| `useReducedMotion` hook | High | 2 hr | Sprint 1 |
+| Modal focus trap + ARIA | High | 4 hr | Sprint 3 |
+| 3D semantic layer | High | 1 week | Sprint 5 |
+| Keyboard scene navigation | High | 1 week | Sprint 5 |
+| axe-core in CI | Medium | 4 hr | Sprint 4 |
+| Screen reader testing | Medium | Ongoing | Sprint 5+ |
+
+---
+
+## 7. Testing Plan
+
+| Tool | Scope | Frequency |
+|------|-------|-----------|
+| axe DevTools | Component-level | Per PR |
+| Lighthouse Accessibility | Page-level | CI |
+| NVDA / VoiceOver | Full flows | Pre-release |
+| Keyboard-only navigation | All interactive pages | Per Sprint |
+
+---
+
+## 8. Summary
+
+Accessibility is unaddressed beyond basic HTML semantics. The dual-interface approach is the correct strategy for a 3D platform. Sprint 1 adds `useReducedMotion`; full compliance requires Sprint 5 work alongside 3D implementation.

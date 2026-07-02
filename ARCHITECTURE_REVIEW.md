@@ -1,33 +1,106 @@
 # Architecture Review: HEXA Vision
 
+**Review Date:** 2026-06-30  
+**Architecture Style:** Monorepo Microservices-lite with BFF (planned)
+
+---
+
 ## 1. System Design Evaluation
-The current architecture follows a **Modern Microservices-lite** approach using a monorepo.
 
 ### Strengths
-- **Infrastructure Isolation:** The use of a dedicated `internal` Docker network for PostgreSQL and Redis is a major security win.
-- **Scalability:** By separating the Frontend (Next.js), Backend (NestJS), and CMS (Strapi), each can be scaled independently in a K8s environment if needed.
-- **Observability:** The inclusion of Prometheus, Grafana, and Loki from day one is exceptional and ensures that performance bottlenecks will be caught early.
-- **Edge Strategy:** The planned integration with Cloudflare (CDN/WAF) and Traefik v3 is the correct approach for a high-traffic, global visual platform.
+
+- **Network isolation:** PostgreSQL and Redis on `internal` Docker network with no published ports
+- **Observability-first:** Prometheus, Grafana, Loki, Promtail from day one
+- **Edge strategy:** Traefik v3 + planned Cloudflare CDN/WAF
+- **Sprint 1 foundation:** Feature-based frontend folders, shared `@hexastudio/types` and `@hexastudio/utils`, global error handling
+- **Type-first contracts:** `ApiResponse<T>`, `Project`, `User` interfaces defined centrally
 
 ### Weaknesses
-- **Coupling Potential:** There is currently no defined contract (API Schema/OpenAPI) that strictly governs the communication between the three apps.
-- **Frontend State Management:** While Zustand and TanStack Query are used, there's no clear architectural pattern for how 3D state (Three.js) interacts with UI state (React).
-- **CMS Dependency:** Strapi is the source of truth for content, but if the Backend also manages domain data, there's a risk of "split-brain" data ownership.
 
-## 2. Comparison with "Enterprise-Grade" Standards
+- **BFF not implemented:** Frontend cannot yet consume aggregated API data
+- **Split data ownership risk:** Strapi (content) vs future NestJS domain DB undefined
+- **3D/UI state boundary:** No pattern for Three.js state vs React UI state interaction
+- **Docker build context:** App-level builds cannot resolve workspace packages
+- **No OpenAPI consumer:** Swagger exists but frontend has no generated client
+
+---
+
+## 2. Stack Decision: Next.js vs Vite + React Router
+
+| Aspect | User Brief | Implemented | Recommendation |
+|--------|-----------|-------------|----------------|
+| Bundler | Vite | Next.js 15 | **Retain Next.js** |
+| Routing | React Router | App Router | Retain App Router |
+| SSR/SEO | Client SPA | SSR/ISR capable | Next.js advantage for SEO |
+| Deployment | Static + nginx | Standalone Node | Already configured |
+
+**Verdict:** Migrating to Vite + React Router would be a **frontend rewrite**, not a refactor. All infrastructure, docs, and Sprint 1 work are Next.js-native. Document Next.js as the canonical stack unless the product owner explicitly mandates Vite.
+
+`react-router-dom` in the repo is a **Strapi admin dependency only**.
+
+---
+
+## 3. Enterprise Standards Comparison
+
 | Feature | Standard | Current State | Rating |
 |---------|----------|---------------|--------|
-| API Design | OpenAPI/Swagger | Scaffolded $\rightarrow$ Needs implementation | $\text{B}$ |
-| Data Isolation | VPC/Internal Net | Implemented via Docker networks | $\text{A}$ |
-| CI/CD | Automated Pipeline | GitHub Actions $\rightarrow$ GHCR $\rightarrow$ SSH | $\text{A}$ |
-| Observability | Full Stack | Prometheus/Grafana/Loki | $\text{A+}$ |
-| Type Safety | End-to-End | Local TS only $\rightarrow$ Needs shared types | $\text{C}$ |
-| Resilience | Healthchecks/Retries | Implemented in Docker Compose | $\text{B+}$ |
+| API Design | OpenAPI/Swagger | Scaffolded at `/api/docs` | B |
+| Data Isolation | VPC/Internal Net | Docker internal network | A |
+| CI/CD | Automated + Quality Gates | Deploy only | C+ |
+| Observability | Full Stack | Prometheus/Grafana/Loki | A+ |
+| Type Safety | End-to-End | Shared package; frontend not wired | B- |
+| Resilience | Healthchecks/Retries | Docker healthchecks | B+ |
+| Testing | Unit + Integration + E2E | None | F |
+| Feature Architecture | Domain modules | Sprint 1 in progress | B |
 
-## 3. Recommended Architectural Pivots
-1. **Shared Type Library:** Implement a `@hexastudio/types` package in the monorepo to share DTOs and Interfaces across Frontend and Backend.
-2. **BFF Pattern (Backend-for-Frontend):** The NestJS API should act as a BFF, aggregating data from Strapi and the primary DB before serving it to Next.js, rather than the Frontend calling Strapi directly for complex logic.
-3. **Asset Optimization Layer:** Introduce a processing pipeline for 3D assets (Draco/KTX2 compression) that triggers upon upload to MinIO.
+---
 
-## 4. Final Verdict
-The foundation is **solid and professional**. The infrastructure is over-engineered in a good way (observability), and the tech stack is cutting-edge. The primary risk is now **implementation execution**—turning these shells into a functioning product.
+## 4. Target Architecture (Clean Architecture)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Presentation (Next.js)                                     │
+│  ├── app/           Routes & layouts                        │
+│  ├── features/      Domain UI (portfolio, scene, auth)      │
+│  ├── components/ui/ Shared atoms                            │
+│  └── hooks/lib/     Cross-cutting utilities                 │
+├─────────────────────────────────────────────────────────────┤
+│  Application (NestJS BFF)                                   │
+│  ├── modules/       auth, projects, health                  │
+│  └── core/          filters, guards, interceptors           │
+├─────────────────────────────────────────────────────────────┤
+│  Content (Strapi CMS)                                       │
+│  └── api/           portfolio, blog, services, categories   │
+├─────────────────────────────────────────────────────────────┤
+│  Infrastructure                                             │
+│  PostgreSQL │ Redis │ MinIO │ Traefik │ Cloudflare          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Layer Rules
+
+1. **Frontend** never calls Strapi directly for complex operations — use BFF
+2. **Shared types** in `packages/types` are the contract between FE and BE
+3. **3D assets** flow: Upload → Process (Draco/KTX2) → MinIO → CDN
+4. **Scene components** lazy-loaded via `next/dynamic` with `ssr: false`
+
+---
+
+## 5. Recommended Pivots
+
+| Priority | Pivot | Rationale |
+|----------|-------|-----------|
+| Critical | Fix monorepo Docker builds | Unblocks CI/CD |
+| Critical | Wire shared types in frontend | E2E type safety |
+| High | Implement BFF project endpoints | Decouple FE from Strapi |
+| High | Define 3D state architecture | Zustand scene slice + R3F bridge |
+| Medium | Generate API client from OpenAPI | Eliminate manual fetch types |
+| Medium | Asset processing pipeline | Performance budget compliance |
+
+---
+
+## 6. Final Verdict
+
+**Grade: B-** (infrastructure A, application D+)
+
+The foundation is professional and over-engineered in the right ways (observability, isolation). Sprint 1 establishes correct structural patterns. Primary risk is **execution velocity** — converting scaffolding into a functioning 3D platform before scope creep from stack debates.

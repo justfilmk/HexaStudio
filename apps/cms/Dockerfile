@@ -1,25 +1,27 @@
-# syntax=docker/dockerfile:1
+# --- Stage 1: Base ---
+FROM node:22 AS base
+RUN apt-get update && apt-get install -y build-essential gcc g++ make python3
+WORKDIR /app
 
-FROM node:20-alpine AS base
-WORKDIR /opt/app
-RUN apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev git python3
-
-FROM base AS deps
-COPY package.json package-lock.json* ./
-RUN npm ci 2>/dev/null || npm install
-
+# --- Stage 2: Builder ---
 FROM base AS builder
-COPY --from=deps /opt/app/node_modules ./node_modules
 COPY . .
-ENV NODE_ENV=production
-ENV NODE_OPTIONS=--max-old-space-size=4096
-RUN npm run build
+RUN npm install
+RUN npm run build --workspace=apps/cms
 
+# --- Stage 3: Runner ---
 FROM base AS runner
-ENV NODE_ENV=production
-RUN addgroup --system --gid 1001 strapi && adduser --system --uid 1001 strapi
-COPY --from=builder --chown=strapi:strapi /opt/app ./
-RUN mkdir -p public/uploads && chown -R strapi:strapi public/uploads
-USER strapi
+WORKDIR /app
+ENV NODE_ENV production
+COPY --from=builder /app/apps/cms/dist ./apps/cms/dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/apps/cms/package.json ./apps/cms/package.json
+COPY --from=builder /app/apps/backend/package.json ./apps/backend/package.json
+COPY --from=builder /app/apps/frontend/package.json ./apps/frontend/package.json
+COPY --from=builder /app/packages/types/package.json ./packages/types/package.json
+COPY --from=builder /app/packages/utils/package.json ./packages/utils/package.json
+
 EXPOSE 1337
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start", "--workspace=apps/cms"]
+

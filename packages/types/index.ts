@@ -1,21 +1,3 @@
-export interface User {
-  id: string;
-  email: string;
-  username: string;
-  role: 'admin' | 'user';
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface Project {
   id: string;
   title: string;
@@ -23,25 +5,43 @@ export interface Project {
   description: string;
   coverImage: string;
   category: Category;
-  models: ProjectModel[];
-  tags: string[];
+  modelUrl: string;
+  hotspots: ProjectHotspot[];
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface ProjectModel {
+export interface ProjectHotspot {
+  id: string;
+  title: string;
+  description: string;
+  position: [number, number, number];
+  lookAt: [number, number, number];
+}
+
+export interface Category {
   id: string;
   name: string;
-  url: string;
-  thumbnail: string;
-  type: 'glb' | 'gltf' | 'usd';
-  size: number;
+  slug: string;
+}
+
+export interface ProjectResponse {
+  projects: Project[];
+  total: number;
 }
 
 export interface ApiResponse<T> {
   data: T;
-  message: string;
   status: number;
-  error?: string;
+  message: string;
+  meta?: {
+    total: number;
+    page: number;
+    limit: number;
+  };
+  error?: {
+    message: string;
+    code: string;
+  };
 }

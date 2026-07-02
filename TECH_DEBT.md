@@ -1,28 +1,91 @@
 # Technical Debt Report: HEXA Vision
 
-## 1. High Priority Debt (Critical Path)
-- **Authentication Gap:** The project has dependencies for JWT/Passport but no implemented logic. This is a primary blocker for all protected features.
-- **3D Scene Absence:** R3F and Three.js are installed, but there is no implementation. The core "value proposition" of the site is currently missing.
-- **CMS Schema Under-development:** Only the `Category` type exists. Without a full schema (Portfolio, Projects, Services), the frontend cannot be populated with real data.
-- **Backend Domain Logic:** The NestJS API is a hollow shell. No services or controllers exist beyond health checks.
+**Last Updated:** 2026-06-30  
+**Debt Register Version:** 2.0 (post-audit refresh)
 
-## 2. Medium Priority Debt (Architecture & Quality)
-- **Frontend Structure:** The current `src` folder is very flat. As the project grows, it will need a feature-based architecture (e.g., `features/scene`, `features/ui`, `features/auth`).
-- **Type Definitions:** While TypeScript is used, there are no shared types between the Backend and Frontend. This will lead to runtime errors as the API grows.
-- **Error Handling:** Basic Sentry integration is present, but no global error handling strategy (interceptors in NestJS, Error Boundaries in React) is implemented.
-- **Asset Pipeline:** No clear strategy for optimizing 3D models (glTF compression, Draco) before they hit MinIO.
+---
 
-## 3. Low Priority Debt (Maintenance & DX)
-- **Test Coverage:** Zero tests implemented across all three applications.
-- **Documentation:** `ARCHITECTURE.md` is a good start, but API documentation (beyond Swagger) and component documentation are missing.
-- **Local DX:** Dependency on Docker for basic DBs is fine, but a simplified `setup.sh` for local non-docker app development would improve speed.
+## 1. Critical Debt (Blockers)
 
-## 4. Debt Summary Table
-| Area | Severity | Impact | Effort to Fix |
-|------|----------|--------|---------------|
-| Auth | Critical | Blocked Features | Medium |
-| 3D Scene | Critical | No Product | High |
-| CMS Schema | High | No Content | Low |
-| API Logic | High | No Functionality | Medium |
-| Project Structure | Medium | Maintainability | Medium |
-| Testing | Medium | Stability | High |
+| ID | Item | Impact | Effort | Status |
+|----|------|--------|--------|--------|
+| TD-001 | **3D scene not implemented** | No product value | High (2–3 weeks) | Open |
+| TD-002 | **Authentication not implemented** | Blocks protected features | Medium (1 week) | Open |
+| TD-003 | **CMS schema incomplete** | No real content | Low (3 days) | Open |
+| TD-004 | **Backend domain logic absent** | No API functionality | Medium (1–2 weeks) | Open |
+| TD-005 | **Docker monorepo build broken** | CI/production builds fail on `@hexastudio/*` | Low (1 day) | In Progress |
+| TD-006 | **Missing frontend deps** (`clsx`, `tailwind-merge`) | Build/lint failure | Trivial (1 hr) | In Progress |
+
+---
+
+## 2. High Priority Debt
+
+| ID | Item | Impact | Effort | Status |
+|----|------|--------|--------|--------|
+| TD-007 | **GlobalExceptionFilter compile error** | Backend build fails | Trivial | In Progress |
+| TD-008 | **HomeHero broken health link** | Misleading UX | Trivial | In Progress |
+| TD-009 | **Button.asChild hack** | Invalid React pattern | Low (2 hr) | In Progress |
+| TD-010 | **Zero test coverage** | No regression safety | High (ongoing) | Open |
+| TD-011 | **No CI quality gates** | Broken code can reach main | Medium (1 day) | Open |
+| TD-012 | **Sentry not configured** | No error visibility | Low (4 hr) | Open |
+| TD-013 | **MinIO public bucket policy** | Asset exposure risk | Low (4 hr) | Open |
+
+---
+
+## 3. Medium Priority Debt
+
+| ID | Item | Impact | Effort | Status |
+|----|------|--------|--------|--------|
+| TD-014 | **Shared types unused in frontend** | Runtime type drift | Low (1 day) | In Progress |
+| TD-015 | **Empty feature modules** (`auth`, `scene`) | Incomplete architecture | Low (Sprint 1) | In Progress |
+| TD-016 | **No root tsconfig** | Inconsistent tooling | Low (2 hr) | In Progress |
+| TD-017 | **Backend eslint missing** | Lint script fails | Trivial | In Progress |
+| TD-018 | **Asset optimization pipeline** | Large 3D payloads | Medium (1 week) | Open |
+| TD-019 | **BFF pattern not implemented** | Frontend may call CMS directly | Medium (1 week) | Open |
+| TD-020 | **Stack documentation mismatch** | Vite+RR in brief vs Next.js in code | Low (doc only) | Open |
+
+---
+
+## 4. Low Priority Debt
+
+| ID | Item | Impact | Effort | Status |
+|----|------|--------|--------|--------|
+| TD-021 | **UI components built but unused** | Dead code | Low | Open |
+| TD-022 | **Framer Motion in docs but not installed** | Doc drift | Trivial | Open |
+| TD-023 | **Local non-Docker dev setup** | Slower onboarding | Low (1 day) | Open |
+| TD-024 | **packages/* lack tsconfig** | Weaker type checking | Low (2 hr) | Open |
+| TD-025 | **Node engine mismatch** (v24 local vs CMS <=22) | Dev warnings | Low | Open |
+
+---
+
+## 5. Resolved Debt (Sprint 1)
+
+| ID | Item | Resolved |
+|----|------|----------|
+| TD-R01 | Flat frontend structure | Feature-based folders added |
+| TD-R02 | No shared types package | `@hexastudio/types` created |
+| TD-R03 | No global error handling | `GlobalErrorBoundary` + `GlobalExceptionFilter` |
+| TD-R04 | No shared utils | `@hexastudio/utils` created |
+
+---
+
+## 6. Debt Summary
+
+| Severity | Open | In Progress | Resolved |
+|----------|------|-------------|----------|
+| Critical | 4 | 2 | 0 |
+| High | 5 | 3 | 0 |
+| Medium | 5 | 3 | 0 |
+| Low | 5 | 0 | 4 |
+
+**Total estimated remediation:** ~8–12 weeks for full debt clearance at current scope.
+
+---
+
+## 7. Debt Prevention Rules
+
+1. No merge without passing typecheck, lint, and build
+2. Shared types required before new API endpoints
+3. Feature work must live under `src/features/<domain>/`
+4. New dependencies require `DEPENDENCY_REPORT.md` update
+5. 3D assets must pass Draco/KTX2 pipeline before MinIO upload

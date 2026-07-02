@@ -53,7 +53,11 @@ PostgreSQL and Redis have **no published ports**. Only services on both networks
 ### Next.js Frontend (`apps/frontend`)
 
 - Next.js 15 with App Router, standalone Docker output
-- TailwindCSS 4, Three.js/R3F/Drei (deps installed, scene TBD)
+- TailwindCSS 4, Three.js/R3F/Drei
+- **Architecture:** Feature-based structure (`src/features`) for domain isolation.
+- **UI Components:** Atomic design approach with a dedicated `/ui` library.
+- **Stability:** Global Error Boundaries and Loading states implemented.
+- **Performance:** `DynamicComponent` wrapper for route-based and component-level lazy loading.
 - TanStack Query + Zustand providers scaffolded
 - Sentry via `NEXT_PUBLIC_SENTRY_DSN`
 
@@ -61,6 +65,9 @@ PostgreSQL and Redis have **no published ports**. Only services on both networks
 
 - Global prefix: `/api`
 - Swagger: `/api/docs`
+- **Architecture:** Modular feature-based structure (`src/modules`).
+- **Core Layer:** Dedicated `/src/core` for global filters, interceptors, and guards.
+- **Standardized API:** Global Exception Filter ensures consistent `ApiResponse<T>` format across all endpoints.
 - Security: Helmet, CORS (env), `@nestjs/throttler` rate limiting
 - Validation: `class-validator` global pipe
 - JWT/Passport deps installed (auth modules TBD)

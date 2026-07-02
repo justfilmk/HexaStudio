@@ -1,32 +1,121 @@
 # SEO Report: HEXA Vision
 
+**Report Date:** 2026-06-30
+
+---
+
 ## 1. Current SEO State
-The project is in the scaffolding phase. Basic Next.js defaults are present, but no explicit SEO strategy has been implemented.
+
+| Element | Status | Notes |
+|---------|--------|-------|
+| `<title>` | Basic | Static "HexaStudio" in root layout |
+| Meta description | Basic | Static one-liner |
+| `lang="en"` | Present | Root layout |
+| `generateMetadata` | Not used | No dynamic pages exist |
+| Open Graph tags | Missing | — |
+| Twitter cards | Missing | — |
+| `robots.txt` | Missing | — |
+| `sitemap.xml` | Missing | — |
+| JSON-LD structured data | Missing | — |
+| Canonical URLs | Missing | — |
+| Semantic HTML | Partial | `<main>` in HomeHero only |
+
+**SEO Score Estimate:** 30/100 (framework defaults only)
+
+---
 
 ## 2. Technical SEO Strategy
 
-### Next.js Optimizations
-- **Metadata API:** Utilize Next.js 15 `generateMetadata` for dynamic SEO tags based on Strapi content (Portfolio items, Blog posts).
-- **Server-Side Rendering (SSR):** All content-heavy pages (Blog, Projects) will be SSR or ISR (Incremental Static Regeneration) to ensure full indexability by search engines.
-- **Semantic HTML:** Implementation of proper `<header>`, `<main>`, `<footer>`, and `<h1>`-`<h6>` hierarchy.
+### Next.js Metadata API (planned)
 
-### Content SEO
-- **Strapi SEO Plugin:** Integration of the SEO plugin in Strapi to allow content editors to manage Meta Titles, Meta Descriptions, and OpenGraph images.
-- **Structured Data (JSON-LD):** Implementation of Schema.org markups for "ProfessionalService", "Project", and "Article" to earn rich snippets in SERPs.
-- **URL Structure:** Clean, slug-based URLs (e.g., `/portfolio/modern-villa-concept`) powered by Strapi.
+```typescript
+// Target pattern for portfolio pages
+export async function generateMetadata({ params }): Promise<Metadata> {
+  const project = await fetchProject(params.slug);
+  return {
+    title: `${project.title} | HexaStudio`,
+    description: project.description,
+    openGraph: { images: [project.coverImage] },
+  };
+}
+```
 
-### Performance & Indexing
-- **Sitemaps:** Dynamic `sitemap.xml` generation using Next.js to automatically include new CMS content.
-- **Robots.txt:** Configured to allow indexing of public pages while blocking `/admin` (CMS) and `/api` (Backend) endpoints.
-- **Canonical Tags:** Implementation of canonical links to prevent duplicate content issues.
+### Rendering Strategy
 
-## 3. SEO Roadmap
-| Task | Priority | Goal |
-|------|----------|------|
-| Meta Tag Integration | High | dynamic tags for all pages |
-| JSON-LD Implementation | Medium | Rich snippets in Google |
-| Dynamic Sitemap | High | Faster indexing of new content |
-| Strapi SEO Setup | High | CMS-driven metadata management |
+| Page Type | Strategy | Rationale |
+|-----------|----------|-----------|
+| Home | SSG | Fast LCP, stable content |
+| Portfolio list | ISR (60s) | Fresh CMS content |
+| Project detail | ISR + `generateMetadata` | SEO + performance |
+| Blog | ISR | Content freshness |
 
-## 4. Summary
-The choice of Next.js provides a massive head start for SEO. By moving from a "shell" to a "content-driven" site with Strapi, the project is well-positioned to dominate search rankings for architectural visualization keywords.
+### URL Structure
+
+```
+/                          Home
+/portfolio                 Project gallery
+/portfolio/[slug]          Project detail
+/blog                      Blog index
+/blog/[slug]               Article
+/services                  Services
+/about                     About
+```
+
+---
+
+## 3. Content SEO (Strapi)
+
+| Task | Priority | Status |
+|------|----------|--------|
+| Strapi SEO plugin or custom meta fields | High | Not started |
+| Portfolio content type with slug | High | Not started |
+| Blog content type | Medium | Not started |
+| Alt text on all media | High | Not started |
+| Category taxonomy | Low | Partial (Category exists) |
+
+---
+
+## 4. Structured Data (JSON-LD)
+
+| Schema | Page | Priority |
+|--------|------|----------|
+| `ProfessionalService` | Home, About | High |
+| `CreativeWork` / `Project` | Portfolio detail | High |
+| `Article` | Blog posts | Medium |
+| `BreadcrumbList` | All nested pages | Medium |
+| `Organization` | Home | High |
+
+---
+
+## 5. Indexing Controls
+
+| File | Configuration |
+|------|---------------|
+| `robots.txt` | Allow `/`, disallow `/api`, `/admin` |
+| `sitemap.xml` | Dynamic from Strapi via Next.js route |
+| Canonical | Self-referencing on all pages |
+
+---
+
+## 6. SEO Roadmap
+
+| Task | Priority | Effort | Sprint |
+|------|----------|--------|--------|
+| Dynamic metadata for portfolio | High | 2 days | Sprint 4 |
+| robots.txt + sitemap | High | 1 day | Sprint 4 |
+| JSON-LD on home + project | Medium | 2 days | Sprint 5 |
+| Strapi SEO fields | High | 1 day | Sprint 2 |
+| Open Graph images | Medium | 1 day | Sprint 4 |
+| Blog SEO | Medium | 2 days | Sprint 6 |
+
+---
+
+## 7. Stack Advantage
+
+Next.js 15 provides SSR, ISR, Metadata API, and sitemap generation — a significant SEO advantage over a Vite SPA that would require additional tooling (react-helmet-async, prerendering service).
+
+---
+
+## 8. Summary
+
+SEO foundation is framework-default only. The Next.js stack positions the project well; execution depends on CMS schema completion and dynamic metadata implementation in Phase 2–3.

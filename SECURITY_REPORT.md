@@ -1,32 +1,95 @@
 # Security Report: HEXA Vision
 
-## 1. Infrastructure Security Analysis
-The current infrastructure is designed with a "Security-First" mindset, focusing on isolation and attack surface reduction.
+**Report Date:** 2026-06-30  
+**Grade:** B+ (structural) / C (operational hardening pending)
 
-### Key Strengths
-- **Network Isolation:** Database and Cache layers (PostgreSQL, Redis) are placed on a dedicated `internal` Docker network with no published ports. This prevents direct external access to the data stores.
-- **Reverse Proxy Hardening:** Traefik v3 is used as the sole entry point. It implements secure headers (HSTS, X-Frame-Options, CSP) via dynamic middlewares.
-- **Rate Limiting:** Multi-layered protection is in place:
-    - **Infrastructure Level:** Traefik middleware rate limiting.
-    - **Application Level:** NestJS `@nestjs/throttler` for granular API protection.
-- **Input Validation:** Strict use of `class-validator` in the NestJS API to prevent injection and malformed data attacks.
-- **Secrets Management:** Use of `.env` files with a strictly defined `.env.example`. No secrets are committed to the repository.
+---
 
-## 2. Identified Risks & Mitigation
+## 1. Security Strengths
 
-| Risk | Severity | Mitigation Strategy | Status |
-|------|----------|---------------------|--------|
-| **Unencrypted Traffic** | High | Implement Cloudflare Origin Certificates or Let's Encrypt via Traefik ACME. | $\text{Pending}$ |
-| **CMS Admin Exposure** | Medium | Implement IP allowlisting for `/admin` and enable 2FA in Strapi. | $\text{Pending}$ |
-| **S3 Public Access** | Medium | Configure MinIO bucket policies to be "Private" by default; use presigned URLs for asset delivery. | $\text{Pending}$ |
-| **JWT Secret Leak** | High | Rotate `JWT_SECRET` regularly and use a strong, randomly generated string. | $\text{Implemented}$ |
-| **DoS Attacks** | Medium | Leverage Cloudflare WAF and Bot Protection to filter traffic before it reaches Traefik. | $\text{Planned}$ |
+| Control | Implementation | Status |
+|---------|---------------|--------|
+| Network isolation | Postgres/Redis on `internal` network | Active |
+| Secret management | `.env` gitignored; `generate-secrets.sh` | Active |
+| Required env validation | `${VAR:?required}` in compose | Active |
+| HTTP security headers | Traefik secure-headers middleware | Active |
+| Rate limiting | Traefik (100 avg) + NestJS Throttler | Active |
+| Input validation | NestJS ValidationPipe (whitelist) | Active |
+| Helmet | NestJS middleware | Active |
+| Non-root containers | nextjs/nestjs/strapi users | Active |
+| No hardcoded secrets in repo | Verified | Pass |
+| CORS | Configurable origins | Active |
 
-## 3. Security Roadmap
-- [ ] **SSL/TLS Setup:** Configure HTTPS across all subdomains.
-- [ ] **CMS Hardening:** Restrict Strapi admin access.
-- [ ] **WAF Configuration:** Set up Cloudflare security rules.
-- [ ] **Audit Log:** Implement a centralized logging system for security events (currently Loki handles logs, but specific security alerts are needed).
+---
 
-## 4. Final Security Grade: B+
-The structural foundation is excellent. Once SSL/TLS and CMS hardening are completed, the project will reach an **A** grade for enterprise-grade security.
+## 2. Identified Risks
+
+| Risk | Severity | Detail | Mitigation | Status |
+|------|----------|--------|------------|--------|
+| Unencrypted HTTP | High | ACME disabled in `.env.example` | Enable Let's Encrypt / Cloudflare Origin | Pending |
+| MinIO anonymous download | Medium | `init-buckets.sh` sets public read | Private buckets + presigned URLs | Pending |
+| Traefik dashboard insecure | Medium | `api.insecure: true` on :8080 | Disable or protect with auth | Pending |
+| CMS admin exposed | Medium | `cms.localhost/admin` | IP allowlist + 2FA | Pending |
+| Monitoring endpoints public | Medium | Grafana/Prometheus via Traefik | Auth middleware or internal only | Pending |
+| Error message leakage | Low | `GlobalExceptionFilter` exposes `exception.message` | Sanitize in production | Pending |
+| No WAF | Medium | Direct Traefik exposure | Cloudflare WAF rules | Planned |
+| Docker socket mounts | Low | Required for Traefik/Watchtower | Standard; monitor access | Accepted |
+| JWT not rotated | Low | Manual rotation only | Rotation playbook | Pending |
+| No dependency scanning CI | Medium | No `npm audit` in pipeline | Add to CI | Pending |
+| Backend Docker build | Medium | Workspace packages may fail silently | Fix monorepo context | In Progress |
+
+---
+
+## 3. Exposed Ports
+
+| Port | Service | Risk |
+|------|---------|------|
+| 80 | Traefik HTTP | Expected (redirect to HTTPS) |
+| 443 | Traefik HTTPS | Expected |
+| 8080 | Traefik dashboard | **Should not be public in production** |
+
+Application services (frontend:3000, backend:4000, cms:1337) are **not** directly exposed — routed through Traefik.
+
+---
+
+## 4. Authentication Security (planned)
+
+| Control | Status |
+|---------|--------|
+| Bcrypt password hashing | Not implemented |
+| JWT with TTL | Not implemented |
+| Refresh token rotation | Not planned yet |
+| Strapi users-permissions | Default (CMS API only) |
+| Bearer auth in Swagger | Decorated, unused |
+
+---
+
+## 5. Security Roadmap
+
+| Task | Priority | Effort | Sprint |
+|------|----------|--------|--------|
+| Fix MinIO bucket policies | High | 4 hr | Sprint 2 |
+| Enable SSL/TLS (ACME) | Critical | 1 day | Sprint 2 |
+| Secure Traefik dashboard | High | 2 hr | Sprint 2 |
+| Sanitize error responses | Medium | 2 hr | Sprint 1 |
+| Add `npm audit` to CI | Medium | 2 hr | Sprint 2 |
+| CMS admin IP allowlist | Medium | 4 hr | Sprint 3 |
+| Cloudflare WAF rules | Medium | 1 day | Sprint 4 |
+| Security event alerting | Low | 1 day | Sprint 5 |
+| Secret rotation playbook | Low | 4 hr | Sprint 3 |
+
+---
+
+## 6. Compliance Considerations
+
+| Standard | Relevance | Status |
+|----------|-----------|--------|
+| OWASP Top 10 | Web app security | Partially addressed |
+| GDPR | User data (future auth) | Not applicable yet |
+| SOC 2 | Enterprise clients | Future consideration |
+
+---
+
+## 7. Summary
+
+Structural security is excellent for a project at this stage. Operational hardening (TLS, bucket policies, dashboard lockdown, WAF) must complete before production launch. No critical secrets exposure detected in the repository.

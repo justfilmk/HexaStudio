@@ -1,23 +1,27 @@
-# syntax=docker/dockerfile:1
-
-FROM node:20-alpine AS base
+# --- Stage 1: Base ---
+FROM node:22 AS base
 WORKDIR /app
 
-FROM base AS deps
-COPY package.json package-lock.json* ./
-RUN npm ci 2>/dev/null || npm install
-
+# --- Stage 2: Builder ---
 FROM base AS builder
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build && npm prune --omit=dev
+RUN npm install
+RUN npm run build --workspace=apps/backend
 
+# --- Stage 3: Runner ---
 FROM base AS runner
-ENV NODE_ENV=production
-RUN addgroup --system --gid 1001 nestjs && adduser --system --uid 1001 nestjs
-COPY --from=builder --chown=nestjs:nestjs /app/dist ./dist
-COPY --from=builder --chown=nestjs:nestjs /app/node_modules ./node_modules
-COPY --from=builder --chown=nestjs:nestjs /app/package.json ./
-USER nestjs
+WORKDIR /app
+ENV NODE_ENV production
+COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/apps/backend/package.json ./apps/backend/package.json
+COPY --from=builder /app/apps/frontend/package.json ./apps/frontend/package.json
+COPY --from=builder /app/apps/cms/package.json ./apps/cms/package.json
+COPY --from=builder /app/packages/types/package.json ./packages/types/package.json
+COPY --from=builder /app/packages/utils/package.json ./packages/utils/package.json
+
 EXPOSE 4000
-CMD ["node", "dist/main.js"]
+CMD ["npm", "run", "start", "--workspace=apps/backend"]
+
+
