@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Mesh } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { ProjectHotspot } from '@hexastudio/types';
 import { useCameraStore } from '@/features/scene/store/camera-store';
@@ -20,19 +19,20 @@ export const Hotspot = ({ hotspot }: HotspotProps) => {
 
   return (
     <group position={hotspot.position}>
-      {/* Visual Marker */}
-      <Mesh 
-        onClick={() => setTarget(hotspot.id)}
-        onPointerOver={() => setIsHovered(true)}
-        onPointerOut={() => setIsHovered(false)}
-      >
-        <sphereGeometry args={[0.1, 16, 16]} />
-        <meshStandardMaterial 
-          color={isHovered ? '#6366f1' : '#ffffff'} 
-          emissive={isHovered ? '#6366f1' : '#ffffff'}
-          emissiveIntensity={2}
-        />
-      </Mesh>
+       {/* Visual Marker */}
+       <mesh 
+         onClick={() => setTarget(hotspot.id)}
+         onPointerOver={() => setIsHovered(true)}
+         onPointerOut={() => setIsHovered(false)}
+       >
+         <sphereGeometry args={[0.1, 16, 16]} />
+         <meshStandardMaterial 
+           color={isHovered ? '#6366f1' : '#ffffff'} 
+           emissive={isHovered ? '#6366f1' : '#ffffff'}
+           emissiveIntensity={2}
+         />
+       </mesh>
+
 
       {/* Label Overlay */}
       {isHovered && (

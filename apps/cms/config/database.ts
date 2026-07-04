@@ -2,12 +2,12 @@ export default ({ env }) => ({
   connection: {
     client: "postgres",
     connection: {
-      host: env("DATABASE_HOST", "localhost"),
-      port: env.int("DATABASE_PORT", 5432),
-      database: env("DATABASE_NAME", "hexastudio_cms"),
-      user: env("DATABASE_USERNAME", "hexastudio"),
-      password: env("DATABASE_PASSWORD", ""),
-      ssl: env.bool("DATABASE_SSL", false),
+      host: "postgres",
+      port: 5432,
+      database: "hexastudio_db",
+      username: "hexa_admin",
+      password: "staging_pwd_2026",
+      ssl: false,
     },
     pool: {
       min: 0,

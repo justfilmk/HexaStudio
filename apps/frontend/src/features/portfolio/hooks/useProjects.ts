@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ProjectResponse, Project } from '@hexstudio/types';
+import { ProjectResponse, Project } from '@hexastudio/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://api.localhost';
 

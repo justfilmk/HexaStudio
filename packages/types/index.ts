@@ -12,6 +12,13 @@ export interface Project {
   updatedAt: string;
 }
 
+export interface ProjectModel {
+  url: string;
+  format: 'glb' | 'gltf';
+  version: string;
+  compressed: boolean;
+}
+
 export interface ProjectHotspot {
   id: string;
   title: string;
@@ -29,6 +36,13 @@ export interface Category {
 export interface ProjectResponse {
   projects: Project[];
   total: number;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  username: string;
+  role: 'admin' | 'editor' | 'user';
 }
 
 export interface ApiResponse<T> {
