@@ -1,14 +1,30 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { ExperienceCanvas } from '@/features/scene/components/ExperienceCanvas';
 import { SceneErrorBoundary } from '@/features/scene/components/SceneErrorBoundary';
 import { LoadingScreen } from '@/components/LoadingScreen';
+import { TextReveal } from '@/components/ui/TextReveal';
 
 export const HomeHero = () => {
   const { scrollYProgress } = useScroll();
+  
+  // Mouse tracking for parallax
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { damping: 25, stiffness: 150 };
+  const translateX = useSpring(useTransform(mouseX, [-0.5, 0.5], [20, -20]), springConfig);
+  const translateY = useSpring(useTransform(mouseY, [-0.5, 0.5], [20, -20]), springConfig);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const { clientX, clientY } = e;
+    const { innerWidth, innerHeight } = window;
+    mouseX.set((clientX / innerWidth) - 0.5);
+    mouseY.set((clientY / innerHeight) - 0.5);
+  };
 
   // Transform scroll progress into cinematic animations
   const opacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
@@ -16,7 +32,10 @@ export const HomeHero = () => {
   const y = useTransform(scrollYProgress, [0, 0.1], [0, -50]);
 
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center px-8 pt-20 overflow-hidden">
+    <section 
+      className="relative flex min-h-screen flex-col items-center justify-center px-8 pt-20 overflow-hidden"
+      onMouseMove={handleMouseMove}
+    >
       {/* 3D Background Experience */}
       <SceneErrorBoundary>
         <Suspense fallback={<LoadingScreen />}>
@@ -27,39 +46,28 @@ export const HomeHero = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/80 pointer-events-none z-[1]" />
 
       <motion.div 
-        style={{ opacity, scale, y }}
+        style={{ opacity, scale, y, x: translateX, y: translateY }}
         className="relative z-10 max-w-5xl text-center pointer-events-none"
       >
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: 'var(--ease-luxury)' }}
-          className="mb-6"
-        >
+        <TextReveal delay={0} className="mb-6">
           <span className="text-[10px] uppercase tracking-[0.4em] text-neutral-500">
             Architectural Visualization
           </span>
-        </motion.div>
+        </TextReveal>
 
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: 'var(--ease-luxury)' }}
-          className="text-6xl md:text-8xl font-light tracking-tighter text-white mb-8"
-        >
-          Living <span className="italic">Spaces.</span> <br />
-          Visualized.
-        </motion.h1>
+        <div className="overflow-hidden mb-8">
+          <TextReveal delay={0.1}>
+            <h1 className="text-6xl md:text-8xl font-light tracking-tighter text-white">
+              Living <span className="italic">Spaces.</span> <br />
+              Visualized.
+            </h1>
+          </TextReveal>
+        </div>
 
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: 'var(--ease-luxury)' }}
-          className="mx-auto max-w-xl text-lg font-light text-neutral-400 mb-12 leading-relaxed"
-        >
+        <TextReveal delay={0.2} className="mx-auto max-w-xl text-lg font-light text-neutral-400 mb-12 leading-relaxed">
           Immersive 3D architectural experiences for the world's most ambitious projects. 
           Where vision takes shape.
-        </motion.p>
+        </TextReveal>
 
         <motion.div 
           initial={{ opacity: 0, y: 20 }}

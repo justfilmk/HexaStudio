@@ -1,128 +1,90 @@
-# HexaStudio
+# 🏛️ HEXA Studio — Architectural Visualization
 
-Production v1 foundation for [HexaStudio.net](https://hexastudio.net) — a 3D creative studio platform.
+<p align="center">
+  <img src="apps/frontend/public/logo.webp" alt="HEXA Studio Logo" width="300" />
+</p>
 
-## Stack
+<p align="center">
+  <strong>Living Spaces. Visualized.</strong><br>
+  <i>Immersive 3D architectural experiences for the world's most ambitious projects.</i>
+</p>
 
-| Layer      | Technology                                                                    |
-| ---------- | ----------------------------------------------------------------------------- |
-| Frontend   | Next.js 15, TailwindCSS 4, Three.js, R3F, Drei, GSAP, Zustand, TanStack Query |
-| API        | NestJS, Swagger, JWT, Passport, Class Validator, Helmet                       |
-| CMS        | Strapi 5 (blog, categories, portfolio, services, SEO)                         |
-| Data       | PostgreSQL 16, Redis 7, MinIO                                                 |
-| Proxy      | Traefik v3                                                                    |
-| Monitoring | Prometheus, Grafana, Loki, Promtail                                           |
-| Errors     | Sentry (env-configured)                                                       |
+---
 
-## Quick Start (Docker)
+## ✨ The Vision
+HEXA Studio bridges the gap between technical architectural data and high-end visual storytelling. We create cinematic, interactive 3D environments that allow clients to experience a space before a single brick is laid.
+
+### 💎 The Luxury Standard
+Our platform is built on three pillars:
+- **Visual Fidelity**: 8K photorealistic rendering, cinematic lighting, and material authenticity.
+- **Immersive Motion**: GSAP-driven storytelling and seamless camera transitions.
+- **Engineering Excellence**: Enterprise-grade monorepo architecture with zero-downtime deployment.
+
+---
+
+## 🛠️ Technical Ecosystem
+
+### Frontend (The Experience)
+- **Framework**: Next.js 15 (App Router)
+- **3D Engine**: Three.js $\rightarrow$ React Three Fiber $\rightarrow$ @react-three/drei
+- **Motion**: GSAP, Framer Motion, Lenis Smooth Scroll
+- **Styling**: TailwindCSS 4 (Luxury Design System)
+
+### Backend (The Intelligence)
+- **BFF**: NestJS (Backend-for-Frontend)
+- **CMS**: Strapi 5 Headless CMS
+- **Auth**: JWT with httpOnly secure cookies
+- **Validation**: Zod & class-validator
+
+### Infrastructure (The Foundation)
+- **Orchestration**: Docker Compose (14 services)
+- **Reverse Proxy**: Traefik v3 (Automatic SSL/ACME)
+- **Data**: PostgreSQL 16, Redis 7, MinIO (S3 Compatible)
+- **Observability**: Sentry, Prometheus, Grafana, Loki
+
+---
+
+## 🚀 Quick Start
 
 ### 1. Prerequisites
-
 - Docker & Docker Compose v2
-- Node.js 20+ (for local app development without Docker)
+- Node.js 20+
 
-### 2. Environment
-
+### 2. Local Setup
 ```bash
+# Clone the repository
+git clone https://github.com/justfilmk/HexaStudio.git
+cd HexaStudio
+
+# Configure environment
 cp .env.example .env
-# Edit .env — set all "change_me_*" values before running
-```
+# Edit .env with your secrets
 
-### 3. Local DNS (Traefik host routing)
-
-Add to `C:\Windows\System32\drivers\etc\hosts` (Windows) or `/etc/hosts` (Linux/macOS):
-
-```
-127.0.0.1 hexastudio.net api.hexastudio.net cms.hexastudio.net storage.hexastudio.net storage-console.hexastudio.net grafana.hexastudio.net prometheus.hexastudio.net traefik.hexastudio.net
-```
-
-### 4. Start the stack
-
-```bash
+# Launch the ecosystem
 docker compose up -d --build
 ```
 
-### 5. Access services
+### 3. Access Points
+| Service | URL |
+| :--- | :--- |
+| **Frontend** | `http://localhost` |
+| **API Docs** | `http://api.localhost/api/docs` |
+| **CMS Admin** | `http://cms.localhost/admin` |
+| **Monitoring** | `http://grafana.localhost` |
 
-| Service            | URL                              |
-| ------------------ | -------------------------------- |
-| Frontend           | http://localhost                 |
-| API                | http://api.localhost/api         |
-| API Docs (Swagger) | http://api.localhost/api/docs    |
-| CMS (Strapi)       | http://cms.localhost/admin       |
-| MinIO API          | http://storage.localhost         |
-| MinIO Console      | http://storage-console.localhost |
-| Grafana            | http://grafana.localhost         |
-| Prometheus         | http://prometheus.localhost      |
-| Traefik Dashboard  | http://traefik.localhost:8080    |
+---
 
-## Local Development (without Docker apps)
+## 📈 Deployment Pipeline
+Our project utilizes a professional CI/CD pipeline:
+`GitHub Push` $\rightarrow$ `Lint & Test` $\rightarrow$ `Docker Build` $\rightarrow$ `GHCR Registry` $\rightarrow$ `Rolling Update (SSH)` $\rightarrow$ `Health Check` $\rightarrow$ `Live`
 
-Run infrastructure only:
+## 📖 Documentation
+- [Architecture Guide](docs/ARCHITECTURE.md)
+- [Implementation Roadmap](IMPLEMENTATION_ROADMAP.md)
+- [AI Operating Manual](AGENTS.md)
 
-```bash
-docker compose up -d postgres redis minio minio-init traefik
-```
+---
 
-Then in separate terminals:
-
-```bash
-npm install
-npm run dev:frontend   # :3000
-npm run dev:backend    # :4000
-npm run dev:cms        # :1337
-```
-
-## Project Structure
-
-```
-HexaStudio/
-├── apps/
-│   ├── frontend/     # Next.js 15
-│   ├── backend/      # NestJS API
-│   └── cms/          # Strapi CMS
-├── docker/
-│   ├── traefik/
-│   ├── prometheus/
-│   ├── grafana/
-│   ├── loki/
-│   ├── minio/
-│   └── postgres/
-├── docs/
-│   └── ARCHITECTURE.md
-├── docker-compose.yml
-├── .env.example
-└── package.json
-```
-
-## CI/CD
-
-Every push to `main` triggers GitHub Actions:
-
-1. **Build** each app (`frontend`, `backend`, `cms`) → push images to `ghcr.io`
-2. **Deploy** via SSH to the production server → `docker compose up -d`
-
-### Setup for CI/CD
-
-1. Add these secrets to your GitHub repo → Settings → Secrets and variables → Actions:
-
-   | Secret             | Value                          |
-   | ------------------ | ------------------------------ |
-   | `SERVER_HOST`    | Your server IP                 |
-   | `SERVER_USER`    | SSH user (e.g.`ubuntu`)      |
-   | `SERVER_SSH_KEY` | Private SSH key for deployment |
-   | `GITHUB_TOKEN`   | Auto-provided                  |
-2. On your server: clone the repo, generate secrets, and do the first deploy:
-
-   ```bash
-   # Run manually once
-   sudo bash /opt/hexastudio/scripts/deploy.sh
-   ```
-
-## Production Deployment (Manual)
-
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full production architecture on Ubuntu 24.04 with Cloudflare.
-
-## License
-
-Private — HexaStudio
+<p align="center">
+  © 2026 HEXA Studio. All rights reserved. Private Repository.
+</p>
