@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { usePathname } from 'next/navigation';
 import { useCinematicCamera } from '@/features/scene/hooks/useCinematicCamera';
 import { useScrollCamera, ScrollPathNode } from '@/features/scene/hooks/useScrollCamera';

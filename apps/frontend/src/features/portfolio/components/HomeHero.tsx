@@ -47,8 +47,8 @@ export const HomeHero = () => {
           transition={{ duration: 0.8, delay: 0.1, ease: 'var(--ease-luxury)' }}
           className="text-6xl md:text-8xl font-light tracking-tighter text-white mb-8"
         >
-          Defining <span className="italic">Spaces</span> <br />
-          Through Light
+          Living <span className="italic">Spaces.</span> <br />
+          Visualized.
         </motion.h1>
 
         <motion.p 
@@ -57,8 +57,8 @@ export const HomeHero = () => {
           transition={{ duration: 0.8, delay: 0.2, ease: 'var(--ease-luxury)' }}
           className="mx-auto max-w-xl text-lg font-light text-neutral-400 mb-12 leading-relaxed"
         >
-          HexaStudio blends technical precision with cinematic storytelling, 
-          creating immersive 3D experiences for the world's most ambitious architectures.
+          Immersive 3D architectural experiences for the world's most ambitious projects. 
+          Where vision takes shape.
         </motion.p>
 
         <motion.div 

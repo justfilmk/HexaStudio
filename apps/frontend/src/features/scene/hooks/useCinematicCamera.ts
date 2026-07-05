@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import gsap from 'gsap';
 import { useCameraStore } from '@/features/scene/store/camera-store';

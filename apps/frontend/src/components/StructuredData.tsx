@@ -6,9 +6,9 @@ export function StructuredData() {
     '@type': 'ProfessionalService',
     name: 'HexaStudio',
     description:
-      'Architectural visualization studio blending technical precision with cinematic storytelling.',
+      'Living Spaces. Visualized. Immersive 3D architectural experiences for the world\'s most ambitious projects.',
     url: 'https://hexastudio.net',
-    logo: 'https://hexastudio.net/favicon.svg',
+    logo: 'https://hexastudio.net/logo.webp',
     sameAs: ['https://instagram.com/hexastudio', 'https://linkedin.com/company/hexastudio'],
     areaServed: 'Worldwide',
     serviceType: [

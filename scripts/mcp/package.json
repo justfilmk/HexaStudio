@@ -1,0 +1,14 @@
+{
+  "name": "hexastudio-mcp-dev-server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "express": "^4.18.0",
+    "cors": "^2.8.5"
+  }
+}

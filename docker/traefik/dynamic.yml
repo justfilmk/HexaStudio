@@ -19,6 +19,24 @@ http:
     compress:
       compress: {}
 
+  routers:
+    opencode:
+      rule: "Host(`opencode.hexastudio.net`)"
+      entryPoints:
+        - websecure
+      service: opencode
+      tls:
+        certResolver: letsencrypt
+      middlewares:
+        - secure-headers
+        - rate-limit
+
+  services:
+    opencode:
+      loadBalancer:
+        servers:
+          - url: "http://172.20.0.1:4096"
+
 tls:
   options:
     default:

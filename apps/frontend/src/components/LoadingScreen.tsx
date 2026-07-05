@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface LoadingScreenProps {
@@ -31,10 +32,16 @@ export const LoadingScreen = ({ children }: LoadingScreenProps) => {
         <div className="relative flex flex-col items-center gap-12">
           <div className="flex items-center gap-4">
             <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-              className="h-4 w-4 border border-accent/50" 
-            />
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <Image
+                src="/logo.webp"
+                alt="HexaStudio"
+                width={24}
+                height={24}
+              />
+            </motion.div>
             <span className="text-xs uppercase tracking-[0.5em] text-foreground font-medium">
               HexaStudio
             </span>

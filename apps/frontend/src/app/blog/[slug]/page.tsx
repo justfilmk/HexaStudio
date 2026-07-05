@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React from 'react';
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useArticles } from '@/features/blog/hooks/useArticles'; // Assuming this hook exists based on useArticles in blog/page.tsx

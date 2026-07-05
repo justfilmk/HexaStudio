@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -10,15 +11,21 @@ export const Footer = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24">
           
           <div className="lg:col-span-5 flex flex-col gap-8">
-            <Link href="/" className="flex items-center gap-4 group w-fit">
-              <div className="h-3 w-3 bg-accent group-hover:rotate-90 transition-transform duration-500" />
+            <Link href="/" className="flex items-center gap-3 group w-fit">
+              <Image
+                src="/logo.webp"
+                alt="HexaStudio Logo"
+                width={24}
+                height={24}
+                className="group-hover:rotate-90 transition-transform duration-500"
+              />
               <span className="text-xs font-medium uppercase tracking-[0.4em] text-foreground">
                 HexaStudio
               </span>
             </Link>
             <p className="text-sm text-neutral-400 leading-relaxed max-w-sm font-light">
-              A multidisciplinary architectural visualization studio blending <br className="hidden md:block" />
-              technical precision with cinematic storytelling.
+              Living Spaces. Visualized. <br className="hidden md:block" />
+              Immersive 3D architectural experiences.
             </p>
           </div>
 

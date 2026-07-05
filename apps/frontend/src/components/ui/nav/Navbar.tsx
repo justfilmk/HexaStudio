@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -70,12 +71,19 @@ export const Navbar = () => {
             : 'py-8 bg-transparent'
         )}
       >
-        <Link href="/" className="group flex items-center gap-4">
+        <Link href="/" className="group flex items-center gap-3">
           <motion.div
             whileHover={{ rotate: 90 }}
             transition={{ duration: 0.5, ease: 'var(--ease-luxury)' }}
-            className="h-4 w-4 bg-accent"
-          />
+          >
+            <Image
+              src="/logo.webp"
+              alt="HexaStudio Logo"
+              width={32}
+              height={32}
+              className="transition-transform duration-500"
+            />
+          </motion.div>
           <span className="text-xs font-medium uppercase tracking-[0.4em] text-foreground group-hover:text-accent transition-colors duration-500">
             HexaStudio
           </span>

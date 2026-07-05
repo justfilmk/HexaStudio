@@ -37,6 +37,7 @@ export const ExperienceCanvas = ({
 }: ExperienceCanvasProps) => {
   const { level, settings } = useAdaptiveQuality();
   const { isTransitioning } = useCameraStore();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const controlsRef = useRef<any>(null);
 
   return (

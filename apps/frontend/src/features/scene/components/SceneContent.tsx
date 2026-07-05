@@ -82,13 +82,6 @@ function ProceduralArchitecture() {
             metalness={1}
             envMapIntensity={2}
           />
-          {floatElements.positions.map((_, i) => {
-            const pos = floatElements.positions.slice(i * 3, i * 3 + 3);
-            const rot = floatElements.rotations.slice(i * 3, i * 3 + 3); // Wait, rotations is not handled by Instances easily without matrix
-            // For simplicity and reliability in R3F, we use a loop but shared geometry/material.
-            // Actually, to truly reduce draw calls, we should use a single InstancedMesh.
-            return null; // Placeholder for logic below
-          })}
         </Instances>
         
         {/* Using shared material and geometry for the floating elements to allow Three.js to batch them */}

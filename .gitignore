@@ -51,3 +51,5 @@ competitor-research-progress.md
 # Misc
 *.tsbuildinfo
 .turbo/
+server.log
+*.err

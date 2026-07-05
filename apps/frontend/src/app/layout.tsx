@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     template: "%s | HexaStudio",
   },
   description:
-    "HexaStudio blends technical precision with cinematic storytelling, creating immersive 3D architectural experiences for the world's most ambitious projects.",
+    "Living Spaces. Visualized. Immersive 3D architectural experiences for the world's most ambitious projects.",
   keywords: [
     "architecture",
     "visualization",
@@ -37,9 +37,9 @@ export const metadata: Metadata = {
     "HexaStudio",
   ],
   openGraph: {
-    title: "HexaStudio — 3D Architectural Visualization",
+    title: "HexaStudio — Living Spaces. Visualized.",
     description:
-      "Blending technical precision with cinematic storytelling for immersive 3D architectural experiences.",
+      "Living Spaces. Visualized. Immersive 3D architectural experiences for the world's most ambitious projects.",
     url: "https://hexastudio.net",
     siteName: "HexaStudio",
     locale: "en_US",
@@ -47,16 +47,16 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "HexaStudio — 3D Architectural Visualization",
+    title: "HexaStudio — Living Spaces. Visualized.",
     description:
-      "Blending technical precision with cinematic storytelling for immersive 3D architectural experiences.",
+      "Living Spaces. Visualized. Immersive 3D architectural experiences for the world's most ambitious projects.",
   },
   robots: {
     index: true,
     follow: true,
   },
   icons: {
-    icon: "/favicon.svg",
+    icon: "/logo.webp",
   },
 };
 
